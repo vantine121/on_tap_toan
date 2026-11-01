@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toán 6 Master - Ôn Tập & Thi Thử Trắc Nghiệm Online</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%20y=%220%22%20viewBox=%220%200%20100%20100%22><text y=%22.9em%22 font-size=%2290%22>📐</text></svg>">
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="nav-container">
+      <div class="logo" onclick="switchView('topics')">
+        <span>📐</span>
+        <span>TOÁN 6 MASTER</span>
+        <span class="logo-badge">ÔN THI ONLINE</span>
+      </div>
+
+      <nav>
+        <ul class="nav-links">
+          <li>
+            <button class="nav-btn active" data-view="topics" onclick="switchView('topics')">
+              📚 Ôn Theo Chủ Đề
+            </button>
+          </li>
+          <li>
+            <button class="nav-btn" data-view="mock" onclick="switchView('mock')">
+              ⏱️ Thi Thử Tổng Hợp
+            </button>
+          </li>
+          <li>
+            <button class="nav-btn" data-view="stats" onclick="switchView('stats')">
+              📊 Thống Kê Học Sinh
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- User Info Bar (Không cần đăng nhập, chỉ cần điền tên) -->
+  <div class="user-bar">
+    <div class="user-bar-inner">
+      <div class="user-tag">
+        <span>👤 <strong>Thông tin học sinh làm bài:</strong></span>
+      </div>
+      <div class="user-inputs">
+        <input type="text" id="student-name-input" class="input-sm" placeholder="Điền Họ và Tên em (VD: Nguyễn Minh An)..." style="width: 250px;">
+        <input type="text" id="student-class-input" class="input-sm" placeholder="Lớp (VD: 6A1)..." style="width: 120px;">
+        <span style="font-size: 0.8rem; color: #64748b;">(Tự động lưu, không cần mật khẩu)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <main>
+
+    <!-- VIEW 1: TOPICS LIST -->
+    <section id="view-topics" class="view-section active">
+      <div class="section-header">
+        <div class="section-title">
+          <h2>Danh Sách Chủ Đề Ôn Tập Toán 6</h2>
+          <p id="total-topics-count">Đang tải danh sách bài học...</p>
+        </div>
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" id="topic-search-input" placeholder="Tìm bài học, chủ đề (số nguyên, phân số...)...">
+        </div>
+      </div>
+
+      <div class="topics-grid" id="topics-grid">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- VIEW 2: MOCK EXAM SETUP -->
+    <section id="view-mock" class="view-section">
+      <div class="mock-card">
+        <h3>⏱️ Cấu Hình Đề Thi Thử / Ôn Tập Tổng Hợp</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+          Hệ thống sẽ tự động bốc ngẫu nhiên câu hỏi từ tất cả các chủ đề Toán 6 để tạo thành một đề thi chuẩn theo đúng ma trận đề kiểm tra.
+        </p>
+
+        <div class="form-group">
+          <label>Số lượng câu hỏi trong đề:</label>
+          <select id="mock-q-count" class="form-select">
+            <option value="20" selected>20 câu hỏi (Đề kiểm tra chuẩn)</option>
+            <option value="30">30 câu hỏi (Đề ôn tập nâng cao)</option>
+            <option value="40">40 câu hỏi (Đề tổng hợp toàn diện)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Thời gian làm bài:</label>
+          <select id="mock-time-select" class="form-select">
+            <option value="30">30 phút</option>
+            <option value="45" selected>45 phút (Chuẩn 1 tiết học)</option>
+            <option value="60">60 phút</option>
+          </select>
+        </div>
+
+        <ul class="exam-features-list">
+          <li>✓ Đề thi trộn ngẫu nhiên từ kho 720+ câu hỏi Toán 6</li>
+          <li>✓ Có đồng hồ đếm ngược, tự động nộp bài khi hết giờ</li>
+          <li>✓ Có chấm điểm thang 10 và nhận xét năng lực ngay sau khi nộp</li>
+          <li>✓ Xem lại toàn bộ câu đúng/sai kèm lời giải chi tiết từng bước</li>
+          <li>✓ Tự động ghi nhận điểm vào bảng thống kê của lớp</li>
+        </ul>
+
+        <div style="text-align: center; margin-top: 1.5rem;">
+          <button class="btn btn-primary btn-lg" onclick="startMockExam()">
+            🚀 Bắt Đầu Làm Bài Thi Thử
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: EXAM RUNNER -->
+    <section id="view-exam" class="view-section">
+      <div class="exam-header-sticky">
+        <div class="exam-title-box">
+          <h3 id="exam-title-text">Đang tải đề thi...</h3>
+          <p id="exam-student-badge">Học sinh: ...</p>
+        </div>
+        <div class="timer-box" id="timer-box">
+          <span>⏱️</span>
+          <span id="timer-display">00:00</span>
+        </div>
+      </div>
+
+      <div class="exam-layout">
+        <!-- Questions List -->
+        <div id="exam-questions-list">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Sidebar Matrix -->
+        <div class="matrix-sidebar">
+          <div class="matrix-header">Danh sách câu hỏi</div>
+          <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.75rem;" id="answered-progress-text">
+            Đã làm: 0/0 câu
+          </div>
+
+          <div class="matrix-grid" id="exam-matrix-grid">
+            <!-- Buttons 1..N -->
+          </div>
+
+          <div class="matrix-legend">
+            <div class="legend-item">
+              <span class="legend-dot" style="background: #3b82f6;"></span>
+              <span>Đã chọn đáp án</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background: #f8fafc; border: 1px solid #cbd5e1;"></span>
+              <span>Chưa chọn</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background: #f59e0b;"></span>
+              <span>Đánh dấu xem lại</span>
+            </div>
+          </div>
+
+          <button class="btn btn-success" style="width: 100%;" onclick="confirmSubmit()">
+            📤 Nộp Bài Thi
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: RESULT SCREEN -->
+    <section id="view-result" class="view-section">
+      <div class="result-container">
+        <div class="result-hero">
+          <div class="score-badge-circle">
+            <span class="score-num" id="res-score-num">0</span>
+            <span class="score-max">Điểm / 10</span>
+          </div>
+
+          <h2 id="res-student-name">Học sinh: ...</h2>
+          <p style="color: var(--text-muted); font-size: 0.95rem;" id="res-exam-title">Bài thi: ...</p>
+
+          <div class="result-evaluation" id="res-evaluation-text">
+            Đang chấm điểm...
+          </div>
+
+          <div class="result-stats-row">
+            <div class="result-stat-item">
+              <span class="result-stat-val" id="res-stat-correct">0/0</span>
+              <span class="result-stat-lbl">Số câu đúng</span>
+            </div>
+            <div class="result-stat-item">
+              <span class="result-stat-val" id="res-stat-accuracy">0%</span>
+              <span class="result-stat-lbl">Độ chính xác</span>
+            </div>
+            <div class="result-stat-item">
+              <span class="result-stat-val" id="res-stat-time">0s</span>
+              <span class="result-stat-lbl">Thời gian làm bài</span>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="switchView('topics')">
+              🔄 Luyện tập chủ đề khác
+            </button>
+            <button class="btn btn-secondary" onclick="switchView('stats')">
+              📊 Xem bảng thống kê điểm
+            </button>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <h3 style="font-size: 1.3rem; color: #1e293b; margin-bottom: 0.5rem;">
+            🔍 Xem Lại Chi Tiết & Hướng Dẫn Giải
+          </h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">
+            Em hãy đọc kỹ các câu làm sai và lời giải chi tiết bên dưới để rút kinh nghiệm nhé!
+          </p>
+        </div>
+
+        <div id="result-review-list">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 5: STATS & TEACHER DASHBOARD -->
+    <section id="view-stats" class="view-section">
+      <div class="section-header">
+        <div class="section-title">
+          <h2>Bảng Thống Kê Học Sinh Làm Bài</h2>
+          <p>Dữ liệu tự động cập nhật mỗi khi có học sinh nộp bài</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <a href="/api/stats/export" class="btn btn-success" download>
+            📥 Xuất file Excel / CSV
+          </a>
+        </div>
+      </div>
+
+      <!-- KPI Summary -->
+      <div class="stats-summary-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📝</div>
+          <div class="stat-info">
+            <h4 id="stat-total-submissions">0</h4>
+            <p>Tổng lượt nộp bài</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #ecfdf5; color: #10b981;">🎯</div>
+          <div class="stat-info">
+            <h4 id="stat-avg-score">0</h4>
+            <p>Điểm trung bình</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #fef3c7; color: #d97706;">🏆</div>
+          <div class="stat-info">
+            <h4 id="stat-highest-score">0</h4>
+            <p>Điểm cao nhất</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Card -->
+      <div class="table-card">
+        <div class="table-header-bar">
+          <h3 style="font-size: 1.05rem; color: #1e293b;">Danh Sách Lượt Làm Bài Gần Đây</h3>
+          <div class="search-box" style="width: 260px;">
+            <span>🔍</span>
+            <input type="text" id="stats-search-input" placeholder="Tìm theo tên học sinh, lớp...">
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Mã</th>
+                <th>Họ và Tên</th>
+                <th>Lớp</th>
+                <th>Chủ đề / Đề thi</th>
+                <th>Điểm số</th>
+                <th>Kết quả (Thời gian)</th>
+                <th>Thời gian nộp</th>
+              </tr>
+            </thead>
+            <tbody id="stats-table-body">
+              <!-- Rendered by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal: Topic Practice Option -->
+  <div class="modal-overlay" id="topic-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modal-topic-title">Luyện tập chủ đề</h3>
+        <button class="modal-close" onclick="closeTopicModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;" id="modal-topic-count">
+          Ngân hàng có sẵn 20 câu hỏi
+        </p>
+
+        <div class="form-group">
+          <label>Em muốn làm bao nhiêu câu?</label>
+          <select id="modal-q-count" class="form-select">
+            <!-- Rendered by JS -->
+          </select>
+        </div>
+
+        <p style="font-size: 0.85rem; color: #64748b; background: #f8fafc; padding: 0.75rem; border-radius: 6px;">
+          💡 Chế độ ôn tập theo chủ đề không giới hạn thời gian. Em cứ bình tĩnh tính toán và đọc kỹ câu hỏi nhé!
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeTopicModal()">Hủy</button>
+        <button class="btn btn-primary" onclick="startTopicExam()">Bắt Đầu Làm Bài</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>Toán 6 Master - Website Ôn Tập Trắc Nghiệm Toán 6 Theo Chương Trình Mới</p>
+    <p style="font-size: 0.8rem; margin-top: 0.3rem;">Hệ thống lưu trữ tự động • Không cần tài khoản • Hỗ trợ học tập 24/7</p>
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

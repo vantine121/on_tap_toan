@@ -1,0 +1,23 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Caches and virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDE files
+.vscode/
+.idea/
+
+# Source raw docs (Khong can thiet khi deploy vi da trich xuat sang JSON va static images)
+Theo bài/
+Theo bài.rar
+Theo bài/Theo bài/
+
+# SQLite lock files if any
+*.db-journal
+
