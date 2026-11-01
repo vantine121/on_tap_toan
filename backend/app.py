@@ -13,7 +13,7 @@ from typing import Dict, Optional, List
 
 from .database import save_submission, get_submissions, get_submission_detail, get_stats, clear_all_data
 
-app = FastAPI(title="Website Ôn tập Trắc nghiệm Toán 6", version="1.0.0")
+app = FastAPI(title="Toán 6 - Thầy Bùi Đức Đạt - THCS Lương Khánh Thiện", version="1.0.0")
 
 # Enable CORS
 app.add_middleware(
