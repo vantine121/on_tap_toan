@@ -41,40 +41,87 @@ function switchView(viewName) {
   }
 }
 
-// Student Info Management
+// Student Info Management (Đồng bộ giữa Topbar và Form Đề Thi)
 function initStudentInfo() {
-  const nameInput = document.getElementById('student-name-input');
-  const classInput = document.getElementById('student-class-input');
+  const topName = document.getElementById('student-name-input');
+  const topClass = document.getElementById('student-class-input');
+  const mockName = document.getElementById('mock-student-name');
+  const mockClass = document.getElementById('mock-student-class');
 
-  if (nameInput) nameInput.value = state.student.name;
-  if (classInput) classInput.value = state.student.class;
+  if (topName) topName.value = state.student.name;
+  if (topClass) topClass.value = state.student.class;
+  if (mockName) mockName.value = state.student.name;
+  if (mockClass) mockClass.value = state.student.class;
 
-  const saveInfo = () => {
-    state.student.name = nameInput.value.trim();
-    state.student.class = classInput.value.trim();
+  const sync = (name, cls) => {
+    state.student.name = name.trim();
+    state.student.class = cls.trim();
     localStorage.setItem('toan6_student_name', state.student.name);
     localStorage.setItem('toan6_student_class', state.student.class);
+
+    if (topName && topName.value !== state.student.name) topName.value = state.student.name;
+    if (mockName && mockName.value !== state.student.name) mockName.value = state.student.name;
+    if (topClass && topClass.value !== state.student.class) topClass.value = state.student.class;
+    if (mockClass && mockClass.value !== state.student.class) mockClass.value = state.student.class;
   };
 
-  if (nameInput) nameInput.addEventListener('change', saveInfo);
-  if (classInput) classInput.addEventListener('change', saveInfo);
+  topName?.addEventListener('input', () => sync(topName.value, topClass?.value || ''));
+  topClass?.addEventListener('input', () => sync(topName?.value || '', topClass.value));
+  mockName?.addEventListener('input', () => sync(mockName.value, mockClass?.value || ''));
+  mockClass?.addEventListener('input', () => sync(mockName?.value || '', mockClass.value));
+
+  // Cấu hình chọn số lượng câu hỏi trong Đề Tổng Hợp
+  initMockPresets();
 }
 
-function checkStudentName() {
-  const nameInput = document.getElementById('student-name-input');
-  const name = nameInput ? nameInput.value.trim() : state.student.name;
-  if (!name) {
-    if (nameInput) {
-      nameInput.focus();
-      nameInput.style.borderColor = '#ef4444';
-      setTimeout(() => { nameInput.style.borderColor = ''; }, 2000);
+function initMockPresets() {
+  const presetContainer = document.getElementById('q-count-presets');
+  const customInput = document.getElementById('mock-custom-q-count');
+  const timeSelect = document.getElementById('mock-time-select');
+
+  if (!presetContainer) return;
+
+  const presetBtns = presetContainer.querySelectorAll('.preset-btn');
+  presetBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      presetBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (customInput) customInput.value = '';
+
+      // Tự động gợi ý thời gian phù hợp theo số câu
+      const count = parseInt(btn.dataset.count) || 20;
+      if (timeSelect) {
+        if (count <= 10) timeSelect.value = '15';
+        else if (count <= 15) timeSelect.value = '30';
+        else if (count <= 25) timeSelect.value = '45';
+        else if (count <= 35) timeSelect.value = '60';
+        else timeSelect.value = '90';
+      }
+    });
+  });
+
+  customInput?.addEventListener('input', () => {
+    if (customInput.value) {
+      presetBtns.forEach(b => b.classList.remove('active'));
     }
-    alert('👉 Em vui lòng điền Họ và tên trước khi bắt đầu làm bài nhé!');
-    return false;
-  }
+  });
+}
+
+function getEffectiveStudentInfo() {
+  const topName = document.getElementById('student-name-input')?.value?.trim();
+  const mockName = document.getElementById('mock-student-name')?.value?.trim();
+  const topClass = document.getElementById('student-class-input')?.value?.trim();
+  const mockClass = document.getElementById('mock-student-class')?.value?.trim();
+
+  const name = mockName || topName || state.student.name || 'Học sinh ôn tập';
+  const cls = mockClass || topClass || state.student.class || '';
+
   state.student.name = name;
+  state.student.class = cls;
   localStorage.setItem('toan6_student_name', name);
-  return true;
+  localStorage.setItem('toan6_student_class', cls);
+
+  return { name, cls };
 }
 
 // 1. TOPICS & PRACTICE
@@ -82,7 +129,7 @@ async function loadTopics() {
   const grid = document.getElementById('topics-grid');
   if (!grid) return;
 
-  grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem;">Đang tải danh sách chủ đề...</div>';
+  grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #475569;">Đang tải danh mục bài học...</div>';
 
   try {
     const res = await fetch('/api/topics');
@@ -91,10 +138,10 @@ async function loadTopics() {
     renderTopics(state.topics);
 
     const countBadge = document.getElementById('total-topics-count');
-    if (countBadge) countBadge.textContent = `${data.summary.totalTopics} chủ đề (${data.summary.totalQuestions} câu hỏi)`;
+    if (countBadge) countBadge.textContent = `${data.summary.totalTopics} bài học (${data.summary.totalQuestions} câu hỏi trắc nghiệm)`;
   } catch (err) {
     console.error('Error loading topics:', err);
-    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #ef4444;">Không thể tải dữ liệu câu hỏi. Hãy kiểm tra máy chủ.</div>';
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #dc2626;">Không thể tải dữ liệu câu hỏi. Hãy kiểm tra kết nối mạng.</div>';
   }
 }
 
@@ -103,7 +150,7 @@ function renderTopics(topics) {
   if (!grid) return;
 
   if (topics.length === 0) {
-    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #64748b;">Không tìm thấy chủ đề phù hợp</div>';
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #64748b;">Không tìm thấy bài học phù hợp</div>';
     return;
   }
 
@@ -112,17 +159,17 @@ function renderTopics(topics) {
       <div>
         <div class="topic-header">
           <span class="topic-num-badge">Bài ${t.id}</span>
-          <span style="font-size: 0.8rem; color: #64748b;">Toán 6</span>
+          <span style="font-size: 0.82rem; font-weight: 600; color: #64748b;">Toán 6</span>
         </div>
         <h3 class="topic-title">${t.title}</h3>
         <div class="topic-meta">
-          <span>📝 <strong>${t.count}</strong> câu trắc nghiệm</span>
-          <span>💡 Có lời giải chi tiết</span>
+          <span>Ngân hàng: <strong>${t.count}</strong> câu hỏi</span>
+          <span>Có lời giải chi tiết</span>
         </div>
       </div>
       <div class="topic-actions">
         <button class="btn btn-primary btn-sm" onclick="openTopicModal(${t.id}, '${escapeHtml(t.title)}', ${t.count})">
-          🚀 Luyện tập ngay
+          Vào Ôn Tập
         </button>
       </div>
     </div>
@@ -138,21 +185,55 @@ document.getElementById('topic-search-input')?.addEventListener('input', (e) => 
   renderTopics(filtered);
 });
 
-// Topic Modal
+// Topic Modal (Ôn theo từng bài học)
 let selectedTopicModal = null;
+let selectedTopicCount = 10;
+
 function openTopicModal(topicId, title, count) {
-  if (!checkStudentName()) return;
+  getEffectiveStudentInfo();
   selectedTopicModal = { id: topicId, title, count };
 
   document.getElementById('modal-topic-title').textContent = title;
-  document.getElementById('modal-topic-count').textContent = `Ngân hàng có sẵn ${count} câu hỏi`;
+  document.getElementById('modal-topic-count').textContent = `Ngân hàng câu hỏi của bài này gồm: ${count} câu hỏi`;
 
-  const countSelect = document.getElementById('modal-q-count');
-  countSelect.innerHTML = `
-    <option value="${Math.min(10, count)}">${Math.min(10, count)} câu hỏi</option>
-    ${count >= 15 ? `<option value="${Math.min(15, count)}">${Math.min(15, count)} câu hỏi</option>` : ''}
-    <option value="${count}" selected>Tất cả (${count} câu hỏi)</option>
-  `;
+  const presetContainer = document.getElementById('topic-q-count-presets');
+  const customInput = document.getElementById('topic-custom-q-count');
+  if (customInput) customInput.value = '';
+
+  // Tạo các nút tùy chọn số câu linh hoạt
+  const counts = [];
+  if (count >= 5) counts.push(5);
+  if (count >= 10) counts.push(10);
+  if (count >= 15) counts.push(15);
+  if (count >= 20) counts.push(20);
+  if (!counts.includes(count)) counts.push(count);
+
+  selectedTopicCount = counts[0] || count;
+
+  if (presetContainer) {
+    presetContainer.innerHTML = counts.map((c, idx) => `
+      <button type="button" class="preset-btn ${idx === 0 ? 'active' : ''}" data-topic-count="${c}">
+        ${c === count ? `Tất cả (${c} câu)` : `${c} câu`}
+      </button>
+    `).join('');
+
+    const btns = presetContainer.querySelectorAll('.preset-btn');
+    btns.forEach(b => {
+      b.addEventListener('click', () => {
+        btns.forEach(btn => btn.classList.remove('active'));
+        b.classList.add('active');
+        selectedTopicCount = parseInt(b.dataset.topicCount);
+        if (customInput) customInput.value = '';
+      });
+    });
+  }
+
+  customInput?.addEventListener('input', () => {
+    if (customInput.value) {
+      presetContainer?.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+      selectedTopicCount = Math.min(Math.max(parseInt(customInput.value) || 1, 1), count);
+    }
+  });
 
   document.getElementById('topic-modal').classList.add('active');
 }
@@ -164,43 +245,73 @@ function closeTopicModal() {
 
 async function startTopicExam() {
   if (!selectedTopicModal) return;
-  const count = parseInt(document.getElementById('modal-q-count').value);
+  const customInput = document.getElementById('topic-custom-q-count');
+  let count = selectedTopicCount;
+  if (customInput && customInput.value) {
+    count = Math.min(Math.max(parseInt(customInput.value) || 1, 1), selectedTopicModal.count);
+  }
+
+  const topicId = selectedTopicModal.id;
+  const topicTitle = selectedTopicModal.title;
   closeTopicModal();
 
   try {
-    const res = await fetch(`/api/topic/${selectedTopicModal.id}/questions?limit=${count}`);
+    const res = await fetch(`/api/topic/${topicId}/questions?limit=${count}`);
     const data = await res.json();
     initExam({
       mode: 'topic',
-      topicId: selectedTopicModal.id,
-      topicTitle: selectedTopicModal.title,
+      topicId: topicId,
+      topicTitle: topicTitle,
       questions: data.questions,
-      timeLimitMinutes: 0 // No countdown for topic practice
+      timeLimitMinutes: 0 // Ôn luyện theo bài: không đếm ngược
     });
   } catch (err) {
-    alert('Có lỗi khi tải đề ôn tập: ' + err.message);
+    alert('Có lỗi khi tải bài ôn tập: ' + err.message);
   }
 }
 
-// 2. MOCK EXAM (THI THỬ)
+// 2. MOCK EXAM (ĐỀ KIỂM TRA TỔNG HỢP)
 async function startMockExam() {
-  if (!checkStudentName()) return;
+  // Lấy thông tin học sinh
+  const student = getEffectiveStudentInfo();
 
-  const count = parseInt(document.getElementById('mock-q-count').value) || 20;
-  const timeMinutes = parseInt(document.getElementById('mock-time-select').value) || 45;
+  // Xác định số lượng câu hỏi học sinh muốn thi
+  let count = 20;
+  const customInput = document.getElementById('mock-custom-q-count');
+  if (customInput && customInput.value) {
+    count = Math.min(Math.max(parseInt(customInput.value) || 1, 1), 100);
+  } else {
+    const activePreset = document.querySelector('#q-count-presets .preset-btn.active');
+    if (activePreset) {
+      count = parseInt(activePreset.dataset.count) || 20;
+    }
+  }
+
+  // Xác định thời gian làm bài
+  const timeMinutes = parseInt(document.getElementById('mock-time-select')?.value) || 0;
 
   try {
     const res = await fetch(`/api/exam/mock?count=${count}&time_minutes=${timeMinutes}`);
+    if (!res.ok) {
+      throw new Error(`Máy chủ phản hồi lỗi (${res.status})`);
+    }
     const data = await res.json();
+
+    if (!data.questions || data.questions.length === 0) {
+      alert('Chưa có câu hỏi nào trong đề thi. Vui lòng thử lại!');
+      return;
+    }
+
     initExam({
       mode: 'mock',
       topicId: null,
-      topicTitle: data.title,
+      topicTitle: data.title || `Đề kiểm tra tổng hợp Toán 6 (${count} câu)`,
       questions: data.questions,
       timeLimitMinutes: timeMinutes
     });
   } catch (err) {
-    alert('Có lỗi khi tạo đề thi thử: ' + err.message);
+    console.error('Error starting mock exam:', err);
+    alert('Không thể tạo đề kiểm tra: ' + err.message);
   }
 }
 
@@ -217,8 +328,9 @@ function initExam(config) {
     bookmarked: {}
   };
 
+  const student = getEffectiveStudentInfo();
   document.getElementById('exam-title-text').textContent = config.topicTitle;
-  document.getElementById('exam-student-badge').textContent = `Học sinh: ${state.student.name} ${state.student.class ? '(' + state.student.class + ')' : ''}`;
+  document.getElementById('exam-student-badge').textContent = `Học sinh: ${student.name} ${student.cls ? '(' + student.cls + ')' : ''}`;
 
   renderExamQuestions();
   renderMatrixSidebar();
@@ -236,7 +348,7 @@ function renderExamQuestions() {
       <div class="q-header">
         <span class="q-badge">Câu ${idx + 1} / ${qs.length}</span>
         <button class="q-bookmark-btn ${state.currentExam.bookmarked[q.id] ? 'bookmarked' : ''}" 
-                title="Đánh dấu xem lại" 
+                title="Đánh dấu để xem lại sau" 
                 onclick="toggleBookmark('${q.id}', ${idx})">
           ★ Đánh dấu
         </button>
@@ -279,7 +391,6 @@ function renderMatrixSidebar() {
 function selectAnswer(qId, opt, idx) {
   state.currentExam.answers[qId] = opt;
 
-  // Update UI for this question card
   const card = document.getElementById(`q-card-${idx}`);
   if (card) {
     const optItems = card.querySelectorAll('.option-item');
@@ -290,7 +401,6 @@ function selectAnswer(qId, opt, idx) {
     });
   }
 
-  // Update Matrix
   renderMatrixSidebar();
 }
 
@@ -329,12 +439,12 @@ function startTimer() {
       remaining--;
       if (remaining <= 0) {
         clearInterval(state.timerInterval);
-        alert('⏰ Đã hết thời gian làm bài! Hệ thống sẽ tự động nộp bài.');
+        alert('Đã hết thời gian làm bài! Hệ thống tự động nộp bài.');
         submitExam(true);
         return;
       }
 
-      if (remaining <= 300) { // under 5 mins
+      if (remaining <= 300) {
         timerBox?.classList.add('timer-urgent');
       }
 
@@ -342,7 +452,7 @@ function startTimer() {
       const s = remaining % 60;
       if (timerDisplay) timerDisplay.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     } else {
-      // Count-up
+      // Đếm thời gian làm bài bình thường
       const m = Math.floor(state.currentExam.timeSpentSeconds / 60);
       const s = state.currentExam.timeSpentSeconds % 60;
       if (timerDisplay) timerDisplay.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
@@ -361,7 +471,7 @@ function confirmSubmit() {
 
   let msg = `Em đã hoàn thành ${answered}/${total} câu hỏi.`;
   if (remaining > 0) {
-    msg += `\n⚠️ Còn ${remaining} câu em chưa chọn đáp án!`;
+    msg += `\nCòn ${remaining} câu em chưa chọn đáp án!`;
   }
   msg += `\nEm có chắc chắn muốn nộp bài ngay bây giờ không?`;
 
@@ -373,9 +483,11 @@ function confirmSubmit() {
 async function submitExam(force = false) {
   clearInterval(state.timerInterval);
 
+  const student = getEffectiveStudentInfo();
+
   const payload = {
-    student_name: state.student.name,
-    student_class: state.student.class,
+    student_name: student.name,
+    student_class: student.cls,
     mode: state.currentExam.mode,
     topic_id: state.currentExam.topicId,
     topic_title: state.currentExam.topicTitle,
@@ -393,7 +505,7 @@ async function submitExam(force = false) {
 
     if (!res.ok) {
       const err = await res.json();
-      throw new Error(err.detail || 'Lỗi nộp bài');
+      throw new Error(err.detail || 'Lỗi khi nộp bài');
     }
 
     const result = await res.json();
@@ -408,7 +520,7 @@ async function submitExam(force = false) {
 // 5. RESULT SCREEN
 function renderResultScreen(res) {
   document.getElementById('res-score-num').textContent = res.score;
-  document.getElementById('res-student-name').textContent = res.student_name + (res.student_class ? ` (${res.student_class})` : '');
+  document.getElementById('res-student-name').textContent = 'Học sinh: ' + res.student_name + (res.student_class ? ` (${res.student_class})` : '');
   document.getElementById('res-exam-title').textContent = res.topic_title || state.currentExam.topicTitle;
   document.getElementById('res-evaluation-text').textContent = res.evaluation;
 
@@ -417,18 +529,18 @@ function renderResultScreen(res) {
 
   const mins = Math.floor(res.time_spent / 60);
   const secs = res.time_spent % 60;
-  document.getElementById('res-stat-time').textContent = `${mins}p ${secs}s`;
+  document.getElementById('res-stat-time').textContent = `${mins} phút ${secs} giây`;
 
   // Render Detailed Review
   const reviewContainer = document.getElementById('result-review-list');
   reviewContainer.innerHTML = res.details.map((q, idx) => `
-    <div class="question-card" style="border-left: 6px solid ${q.is_correct ? '#10b981' : '#ef4444'};">
+    <div class="question-card" style="border-left: 5px solid ${q.is_correct ? '#059669' : '#dc2626'};">
       <div class="q-header">
-        <span class="q-badge" style="background: ${q.is_correct ? '#dcfce7' : '#fee2e2'}; color: ${q.is_correct ? '#15803d' : '#b91c1c'};">
-          ${q.is_correct ? '✓ Đúng' : '✗ Sai'} - Câu ${idx + 1}
+        <span class="q-badge" style="background: ${q.is_correct ? '#dcfce7' : '#fee2e2'}; color: ${q.is_correct ? '#166534' : '#991b1b'};">
+          ${q.is_correct ? '✓ Trả lời đúng' : '✗ Trả lời sai'} - Câu ${idx + 1}
         </span>
-        <span style="font-size: 0.85rem; font-weight: 600; color: ${q.is_correct ? '#10b981' : '#ef4444'};">
-          Em chọn: ${q.student_answer || 'Chưa trả lời'} | Đáp án đúng: ${q.correct_answer}
+        <span style="font-size: 0.9rem; font-weight: 600; color: ${q.is_correct ? '#059669' : '#dc2626'};">
+          Đáp án em chọn: <strong>${q.student_answer || 'Chưa trả lời'}</strong> | Đáp án đúng: <strong>${q.correct_answer}</strong>
         </span>
       </div>
       <div class="q-content">${q.content}</div>
@@ -442,93 +554,82 @@ function renderResultScreen(res) {
             <div class="option-item ${optClass}">
               <div class="opt-radio">${opt}</div>
               <div class="opt-text">${q.options[opt] || ''}</div>
-              ${opt === q.correct_answer ? '<span style="color:#10b981; font-weight:700; margin-left:auto;">✓ Đáp án đúng</span>' : ''}
-              ${opt === q.student_answer && !q.is_correct ? '<span style="color:#ef4444; font-weight:700; margin-left:auto;">✗ Lựa chọn của em</span>' : ''}
+              ${opt === q.correct_answer ? '<span style="color:#059669; font-weight:700; margin-left:auto;">✓ Đáp án chính xác</span>' : ''}
+              ${opt === q.student_answer && !q.is_correct ? '<span style="color:#dc2626; font-weight:700; margin-left:auto;">✗ Lựa chọn của em</span>' : ''}
             </div>
           `;
         }).join('')}
       </div>
-
       ${q.explanation ? `
-        <div class="explanation-box">
-          <div class="explanation-title">💡 Hướng dẫn giải chi tiết:</div>
-          <div class="explanation-content">${q.explanation}</div>
+        <div class="q-explanation">
+          <div class="exp-title">Hướng dẫn giải chi tiết:</div>
+          <div class="exp-body">${q.explanation}</div>
         </div>
       ` : ''}
     </div>
   `).join('');
 }
 
-// 6. STATISTICS & TEACHER DASHBOARD
+// 6. STATS & TEACHER DASHBOARD
 async function loadStats() {
-  const tbody = document.getElementById('stats-table-body');
-  if (!tbody) return;
-
-  tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;">Đang tải dữ liệu thống kê...</td></tr>';
+  const tbody = document.getElementById('submissions-tbody');
+  if (tbody) tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 2rem;">Đang tải dữ liệu...</td></tr>';
 
   try {
-    const res = await fetch('/api/stats');
-    const data = await res.json();
+    const [statsRes, subsRes] = await Promise.all([
+      fetch('/api/stats'),
+      fetch('/api/stats/submissions?limit=100')
+    ]);
 
-    document.getElementById('stat-total-submissions').textContent = data.total_submissions || 0;
-    document.getElementById('stat-avg-score').textContent = data.average_score || 0;
-    document.getElementById('stat-highest-score').textContent = data.highest_score || 0;
+    const stats = await statsRes.json();
+    const subs = await subsRes.json();
 
-    renderSubmissionsTable(data.recent || []);
+    document.getElementById('stat-total-submissions').textContent = stats.total_submissions || 0;
+    document.getElementById('stat-average-score').textContent = (stats.average_score || 0.0).toFixed(1);
+    document.getElementById('stat-highest-score').textContent = (stats.highest_score || 0.0).toFixed(1);
+
+    renderSubmissionsTable(subs);
   } catch (err) {
     console.error('Error loading stats:', err);
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #ef4444;">Không thể tải thống kê.</td></tr>';
+    if (tbody) tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: #dc2626; padding: 2rem;">Lỗi tải dữ liệu thống kê.</td></tr>';
   }
 }
 
 function renderSubmissionsTable(subs) {
-  const tbody = document.getElementById('stats-table-body');
+  const tbody = document.getElementById('submissions-tbody');
   if (!tbody) return;
 
   if (subs.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #64748b;">Chưa có lượt học sinh nào làm bài.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 2rem; color: #64748b;">Chưa có lượt nộp bài nào</td></tr>';
     return;
   }
 
-  tbody.innerHTML = subs.map((s, idx) => {
-    let badgeClass = 'badge-score-low';
-    if (s.score >= 8.0) badgeClass = 'badge-score-high';
-    else if (s.score >= 6.5) badgeClass = 'badge-score-med';
-
-    const mins = Math.floor(s.time_spent / 60);
-    const secs = s.time_spent % 60;
-
-    return `
-      <tr>
-        <td>#${s.id}</td>
-        <td><strong>${escapeHtml(s.student_name)}</strong></td>
-        <td>${escapeHtml(s.student_class || '-')}</td>
-        <td>${escapeHtml(s.topic_title || '-')}</td>
-        <td><span class="badge-score ${badgeClass}">${s.score} / 10</span></td>
-        <td>${s.correct_count}/${s.total_questions} (${mins}p ${secs}s)</td>
-        <td style="font-size: 0.85rem; color: #64748b;">${s.created_at}</td>
-      </tr>
-    `;
-  }).join('');
+  tbody.innerHTML = subs.map(s => `
+    <tr>
+      <td><strong>${escapeHtml(s.student_name)}</strong></td>
+      <td>${escapeHtml(s.student_class || '-')}</td>
+      <td><span class="badge ${s.mode === 'topic' ? 'badge-topic' : 'badge-mock'}">${s.mode === 'topic' ? 'Theo bài' : 'Tổng hợp'}</span></td>
+      <td>${escapeHtml(s.topic_title || '-')}</td>
+      <td><span class="score-pill ${getScoreClass(s.score)}">${s.score}</span></td>
+      <td>${s.correct_count} / ${s.total_questions}</td>
+      <td>${Math.floor(s.time_spent / 60)}p ${s.time_spent % 60}s</td>
+      <td style="color: #64748b; font-size: 0.85rem;">${s.created_at}</td>
+    </tr>
+  `).join('');
 }
 
-// Search Submissions
-document.getElementById('stats-search-input')?.addEventListener('input', (e) => {
-  const query = e.target.value.toLowerCase().trim();
-  const rows = document.querySelectorAll('#stats-table-body tr');
-  rows.forEach(row => {
-    row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
-  });
-});
+function getScoreClass(score) {
+  if (score >= 8.5) return 'score-high';
+  if (score >= 6.5) return 'score-med';
+  if (score >= 5.0) return 'score-pass';
+  return 'score-low';
+}
 
-// Helper
 function escapeHtml(str) {
   if (!str) return '';
-  return str.replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
+  return str.replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[m]);
 }
 
 // Initial Boot

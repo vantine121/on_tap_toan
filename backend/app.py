@@ -178,21 +178,21 @@ def submit_exam(req: SubmitRequest):
         
     score = (correct_count / total_q) * 10.0
     
-    # Generate Evaluation
+    # Nhận xét sư phạm của giáo viên
     if score >= 9.0:
-        eval_text = "🌟 Xuất sắc! Em nắm rất vững kiến thức và làm bài rất cẩn thận, chuẩn xác. Tiếp tục phát huy nhé!"
+        eval_text = "Thầy khen ngợi! Em nắm rất chắc kiến thức, làm bài cẩn thận và đạt kết quả xuất sắc. Hãy tiếp tục phát huy nhé!"
         badge = "badge-excellent"
     elif score >= 8.0:
-        eval_text = "🎉 Giỏi lắm! Em đã hoàn thành bài thi rất tốt. Hãy xem lại vài câu chưa đúng để đạt điểm tuyệt đối nhé!"
+        eval_text = "Bài làm rất tốt! Em đã nắm vững hầu hết các dạng toán. Hãy xem lại hướng dẫn giải các câu chưa đúng để rút kinh nghiệm nhé."
         badge = "badge-good"
     elif score >= 6.5:
-        eval_text = "👍 Khá tốt! Em đã nắm được hầu hết các kiến thức trọng tâm. Hãy đọc kỹ phần giải thích của những câu sai để nhớ lâu hơn."
+        eval_text = "Khá tốt! Em đã hiểu bài nhưng cần tính toán cẩn thận hơn để tránh những lỗi nhầm lẫn đáng tiếc."
         badge = "badge-fair"
     elif score >= 5.0:
-        eval_text = "⚡ Đạt yêu cầu! Em cần ôn lại các công thức và quy tắc tính toán. Hãy bấm vào xem lời giải chi tiết bên dưới nhé!"
+        eval_text = "Đạt yêu cầu. Em cần ôn lại các quy tắc tính toán và đọc kỹ phần hướng dẫn giải chi tiết bên dưới nhé."
         badge = "badge-average"
     else:
-        eval_text = "💪 Cần cố gắng hơn nữa! Em hãy bình tĩnh đọc kỹ lại từng phần lý thuyết và xem hướng dẫn giải chi tiết bên dưới để làm lại tốt hơn nhé!"
+        eval_text = "Cần cố gắng nhiều hơn. Em hãy đọc lại lý thuyết trong sách giáo khoa, xem kỹ lời giải chi tiết của từng câu bên dưới và làm lại để cải thiện điểm số."
         badge = "badge-retry"
         
     topic_name = req.topic_title or ("Thi thử tổng hợp" if req.mode == "mock" else f"Chủ đề {req.topic_id}")

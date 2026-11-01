@@ -3,36 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Toán 6 - Thầy Bùi Đức Đạt | THCS Lương Khánh Thiện</title>
+  <title>Ôn Tập & Kiểm Tra Toán 6 - Trường THCS Lương Khánh Thiện</title>
   <link rel="stylesheet" href="/static/css/style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%20y=%220%22%20viewBox=%220%200%20100%20100%22><text y=%22.9em%22 font-size=%2290%22>📐</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%200%20100%20100%22><text y=%22.9em%22 font-size=%2290%22>📘</text></svg>">
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- Header Trường học -->
   <header>
     <div class="nav-container">
-      <div class="logo" onclick="switchView('topics')">
-        <span>📐</span>
-        <span>TOÁN 6 · THCS LƯƠNG KHÁNH THIỆN</span>
-        <span class="logo-badge">THẦY BÙI ĐỨC ĐẠT</span>
+      <div class="school-brand" onclick="switchView('topics')">
+        <div class="brand-text">
+          <div class="school-title">TRƯỜNG THCS LƯƠNG KHÁNH THIỆN</div>
+          <div class="system-title">HỆ THỐNG ÔN TẬP & KIỂM TRA MÔN TOÁN 6</div>
+        </div>
+        <div class="teacher-tag">GV: Bùi Đức Đạt</div>
       </div>
 
       <nav>
         <ul class="nav-links">
           <li>
             <button class="nav-btn active" data-view="topics" onclick="switchView('topics')">
-              📚 Ôn Theo Chủ Đề
+              Ôn Luyện Từng Bài
             </button>
           </li>
           <li>
             <button class="nav-btn" data-view="mock" onclick="switchView('mock')">
-              ⏱️ Thi Thử Tổng Hợp
+              Đề Kiểm Tra Tổng Hợp
             </button>
           </li>
           <li>
             <button class="nav-btn" data-view="stats" onclick="switchView('stats')">
-              📊 Thống Kê Học Sinh
+              Sổ Theo Dõi Điểm
             </button>
           </li>
         </ul>
@@ -40,16 +42,16 @@
     </div>
   </header>
 
-  <!-- User Info Bar (Không cần đăng nhập, chỉ cần điền tên) -->
+  <!-- User Info Bar -->
   <div class="user-bar">
     <div class="user-bar-inner">
       <div class="user-tag">
-        <span>👤 <strong>Thông tin học sinh làm bài:</strong></span>
+        <span>Thông tin học sinh:</span>
       </div>
       <div class="user-inputs">
-        <input type="text" id="student-name-input" class="input-sm" placeholder="Điền Họ và Tên em (VD: Nguyễn Minh An)..." style="width: 250px;">
+        <input type="text" id="student-name-input" class="input-sm" placeholder="Họ và tên học sinh..." style="width: 250px;">
         <input type="text" id="student-class-input" class="input-sm" placeholder="Lớp (VD: 6A1)..." style="width: 120px;">
-        <span style="font-size: 0.8rem; color: #64748b;">(Tự động lưu, không cần mật khẩu)</span>
+        <span class="user-note">(Hệ thống tự động lưu trên máy của em)</span>
       </div>
     </div>
   </div>
@@ -61,12 +63,12 @@
     <section id="view-topics" class="view-section active">
       <div class="section-header">
         <div class="section-title">
-          <h2>Danh Sách Chủ Đề Ôn Tập Toán 6</h2>
+          <h2>Danh Mục Bài Học & Chủ Đề Ôn Tập</h2>
           <p id="total-topics-count">Đang tải danh sách bài học...</p>
         </div>
         <div class="search-box">
-          <span>🔍</span>
-          <input type="text" id="topic-search-input" placeholder="Tìm bài học, chủ đề (số nguyên, phân số...)...">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="topic-search-input" placeholder="Tìm kiếm bài học (Số tự nhiên, Phân số, Hình học...)...">
         </div>
       </div>
 
@@ -75,44 +77,74 @@
       </div>
     </section>
 
-    <!-- VIEW 2: MOCK EXAM SETUP -->
+    <!-- VIEW 2: MOCK EXAM SETUP (ĐỀ KIỂM TRA TỔNG HỢP) -->
     <section id="view-mock" class="view-section">
       <div class="mock-card">
-        <h3>⏱️ Cấu Hình Đề Thi Thử / Ôn Tập Tổng Hợp</h3>
-        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
-          Hệ thống sẽ tự động bốc ngẫu nhiên câu hỏi từ tất cả các chủ đề Toán 6 để tạo thành một đề thi chuẩn theo đúng ma trận đề kiểm tra.
-        </p>
-
-        <div class="form-group">
-          <label>Số lượng câu hỏi trong đề:</label>
-          <select id="mock-q-count" class="form-select">
-            <option value="20" selected>20 câu hỏi (Đề kiểm tra chuẩn)</option>
-            <option value="30">30 câu hỏi (Đề ôn tập nâng cao)</option>
-            <option value="40">40 câu hỏi (Đề tổng hợp toàn diện)</option>
-          </select>
+        <div class="card-header-edu">
+          <h3>ĐỀ KIỂM TRA & ÔN TẬP TỔNG HỢP MÔN TOÁN 6</h3>
+          <p>Hệ thống tự động trích xuất ngẫu nhiên câu hỏi từ ngân hàng 721 câu trắc nghiệm Toán 6 theo các chủ đề: Số tự nhiên, Số nguyên, Phân số và Hình học trực quan.</p>
         </div>
 
-        <div class="form-group">
-          <label>Thời gian làm bài:</label>
-          <select id="mock-time-select" class="form-select">
-            <option value="30">30 phút</option>
-            <option value="45" selected>45 phút (Chuẩn 1 tiết học)</option>
-            <option value="60">60 phút</option>
-          </select>
-        </div>
+        <div class="exam-config-body">
+          <!-- Thông tin học sinh trực tiếp trong trang thi -->
+          <div class="form-row student-form-row">
+            <div class="form-group flex-2">
+              <label>Họ và tên học sinh:</label>
+              <input type="text" id="mock-student-name" class="form-control" placeholder="Nhập họ và tên của em...">
+            </div>
+            <div class="form-group flex-1">
+              <label>Lớp:</label>
+              <input type="text" id="mock-student-class" class="form-control" placeholder="Ví dụ: 6A1">
+            </div>
+          </div>
 
-        <ul class="exam-features-list">
-          <li>✓ Đề thi trộn ngẫu nhiên từ kho 720+ câu hỏi Toán 6</li>
-          <li>✓ Có đồng hồ đếm ngược, tự động nộp bài khi hết giờ</li>
-          <li>✓ Có chấm điểm thang 10 và nhận xét năng lực ngay sau khi nộp</li>
-          <li>✓ Xem lại toàn bộ câu đúng/sai kèm lời giải chi tiết từng bước</li>
-          <li>✓ Tự động ghi nhận điểm vào bảng thống kê của lớp</li>
-        </ul>
+          <!-- Tùy chọn số lượng câu hỏi -->
+          <div class="form-group">
+            <label>Số lượng câu hỏi muốn thi:</label>
+            <div class="quick-options-grid" id="q-count-presets">
+              <button type="button" class="preset-btn" data-count="5">5 câu</button>
+              <button type="button" class="preset-btn" data-count="10">10 câu</button>
+              <button type="button" class="preset-btn" data-count="15">15 câu</button>
+              <button type="button" class="preset-btn active" data-count="20">20 câu (Chuẩn)</button>
+              <button type="button" class="preset-btn" data-count="25">25 câu</button>
+              <button type="button" class="preset-btn" data-count="30">30 câu</button>
+              <button type="button" class="preset-btn" data-count="40">40 câu</button>
+            </div>
+            <div class="custom-count-row">
+              <span>Hoặc tự nhập số câu em muốn làm:</span>
+              <input type="number" id="mock-custom-q-count" min="1" max="100" placeholder="Số câu..." class="form-control-sm">
+              <span class="text-muted">(Từ 1 đến 100 câu)</span>
+            </div>
+          </div>
 
-        <div style="text-align: center; margin-top: 1.5rem;">
-          <button class="btn btn-primary btn-lg" onclick="startMockExam()">
-            🚀 Bắt Đầu Làm Bài Thi Thử
-          </button>
+          <!-- Tùy chọn thời gian làm bài -->
+          <div class="form-group">
+            <label>Thời gian làm bài:</label>
+            <select id="mock-time-select" class="form-select">
+              <option value="15">15 phút (Kiểm tra nhanh 15 phút)</option>
+              <option value="30">30 phút</option>
+              <option value="45" selected>45 phút (Đề kiểm tra 1 tiết)</option>
+              <option value="60">60 phút</option>
+              <option value="90">90 phút (Kiểm tra học kỳ)</option>
+              <option value="0">Không giới hạn thời gian (Tự do luyện tập)</option>
+            </select>
+          </div>
+
+          <div class="exam-notice-box">
+            <div class="notice-title">Lưu ý khi làm bài:</div>
+            <ul>
+              <li>Đề thi trắc nghiệm 4 lựa chọn (A, B, C, D), có thể đổi đáp án trước khi bấm nộp bài.</li>
+              <li>Hệ thống tự động chấm điểm theo thang điểm 10 ngay khi kết thúc bài làm.</li>
+              <li>Xem lại lời giải và hướng dẫn chi tiết từng bước cho từng câu hỏi sau khi nộp.</li>
+              <li>Kết quả làm bài sẽ được lưu vào sổ theo dõi điểm để giáo viên nắm bắt tình hình học tập.</li>
+            </ul>
+          </div>
+
+          <div class="exam-action-box">
+            <button class="btn btn-primary btn-lg" onclick="startMockExam()">
+              Bắt Đầu Làm Bài Kiểm Tra
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -125,7 +157,7 @@
           <p id="exam-student-badge">Học sinh: ...</p>
         </div>
         <div class="timer-box" id="timer-box">
-          <span>⏱️</span>
+          <span class="timer-label">Thời gian còn lại:</span>
           <span id="timer-display">00:00</span>
         </div>
       </div>
@@ -139,7 +171,7 @@
         <!-- Sidebar Matrix -->
         <div class="matrix-sidebar">
           <div class="matrix-header">Danh sách câu hỏi</div>
-          <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.75rem;" id="answered-progress-text">
+          <div class="matrix-progress" id="answered-progress-text">
             Đã làm: 0/0 câu
           </div>
 
@@ -149,12 +181,12 @@
 
           <div class="matrix-legend">
             <div class="legend-item">
-              <span class="legend-dot" style="background: #3b82f6;"></span>
+              <span class="legend-dot" style="background: #1d4ed8;"></span>
               <span>Đã chọn đáp án</span>
             </div>
             <div class="legend-item">
               <span class="legend-dot" style="background: #f8fafc; border: 1px solid #cbd5e1;"></span>
-              <span>Chưa chọn</span>
+              <span>Chưa làm</span>
             </div>
             <div class="legend-item">
               <span class="legend-dot" style="background: #f59e0b;"></span>
@@ -163,7 +195,7 @@
           </div>
 
           <button class="btn btn-success" style="width: 100%;" onclick="confirmSubmit()">
-            📤 Nộp Bài Thi
+            Nộp Bài Làm
           </button>
         </div>
       </div>
@@ -202,20 +234,20 @@
 
           <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
             <button class="btn btn-primary" onclick="switchView('topics')">
-              🔄 Luyện tập chủ đề khác
+              Tiếp tục luyện tập bài khác
             </button>
             <button class="btn btn-secondary" onclick="switchView('stats')">
-              📊 Xem bảng thống kê điểm
+              Xem sổ theo dõi điểm
             </button>
           </div>
         </div>
 
         <div style="margin-bottom: 1.5rem;">
-          <h3 style="font-size: 1.3rem; color: #1e293b; margin-bottom: 0.5rem;">
-            🔍 Xem Lại Chi Tiết & Hướng Dẫn Giải
+          <h3 style="font-size: 1.25rem; color: #1e293b; margin-bottom: 0.5rem;">
+            Hướng Dẫn Giải Chi Tiết Từng Câu
           </h3>
           <p style="color: var(--text-muted); font-size: 0.9rem;">
-            Em hãy đọc kỹ các câu làm sai và lời giải chi tiết bên dưới để rút kinh nghiệm nhé!
+            Em hãy xem kỹ lại các câu làm sai và đọc phần hướng dẫn giải chi tiết để củng cố kiến thức nhé!
           </p>
         </div>
 
@@ -229,69 +261,68 @@
     <section id="view-stats" class="view-section">
       <div class="section-header">
         <div class="section-title">
-          <h2>Bảng Thống Kê Học Sinh Làm Bài</h2>
-          <p>Dữ liệu tự động cập nhật mỗi khi có học sinh nộp bài</p>
+          <h2>Sổ Theo Dõi Kết Quả Học Sinh Làm Bài</h2>
+          <p>Dữ liệu tự động cập nhật mỗi khi học sinh nộp bài</p>
         </div>
         <div style="display: flex; gap: 0.5rem;">
           <a href="/api/stats/export" class="btn btn-success" download>
-            📥 Xuất file Excel / CSV
+            Tải File Excel / CSV
           </a>
         </div>
       </div>
 
-      <!-- KPI Summary -->
+      <!-- Summary Cards -->
       <div class="stats-summary-grid">
         <div class="stat-card">
-          <div class="stat-icon">📝</div>
           <div class="stat-info">
             <h4 id="stat-total-submissions">0</h4>
-            <p>Tổng lượt nộp bài</p>
+            <p>Tổng lượt làm bài</p>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background: #ecfdf5; color: #10b981;">🎯</div>
           <div class="stat-info">
-            <h4 id="stat-avg-score">0</h4>
+            <h4 id="stat-average-score">0.0</h4>
             <p>Điểm trung bình</p>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background: #fef3c7; color: #d97706;">🏆</div>
           <div class="stat-info">
-            <h4 id="stat-highest-score">0</h4>
+            <h4 id="stat-highest-score">0.0</h4>
             <p>Điểm cao nhất</p>
           </div>
         </div>
       </div>
 
-      <!-- Table Card -->
-      <div class="table-card">
-        <div class="table-header-bar">
-          <h3 style="font-size: 1.05rem; color: #1e293b;">Danh Sách Lượt Làm Bài Gần Đây</h3>
-          <div class="search-box" style="width: 260px;">
-            <span>🔍</span>
-            <input type="text" id="stats-search-input" placeholder="Tìm theo tên học sinh, lớp...">
-          </div>
-        </div>
+      <!-- Filter Controls -->
+      <div class="stats-filter-bar">
+        <input type="text" id="stats-search-input" placeholder="Tìm theo tên học sinh hoặc lớp..." class="form-control" style="max-width: 300px;">
+        <select id="stats-topic-filter" class="form-select" style="max-width: 250px;">
+          <option value="">Tất cả các bài học</option>
+        </select>
+        <button class="btn btn-outline btn-sm" onclick="loadStats()" style="margin-left: auto;">
+          Làm mới dữ liệu
+        </button>
+      </div>
 
-        <div class="table-responsive">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Mã</th>
-                <th>Họ và Tên</th>
-                <th>Lớp</th>
-                <th>Chủ đề / Đề thi</th>
-                <th>Điểm số</th>
-                <th>Kết quả (Thời gian)</th>
-                <th>Thời gian nộp</th>
-              </tr>
-            </thead>
-            <tbody id="stats-table-body">
-              <!-- Rendered by JS -->
-            </tbody>
-          </table>
-        </div>
+      <!-- Submissions Table -->
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Họ và Tên</th>
+              <th>Lớp</th>
+              <th>Chế Độ</th>
+              <th>Chủ Đề / Đề Thi</th>
+              <th>Điểm Số</th>
+              <th>Số Câu Đúng</th>
+              <th>Thời Gian</th>
+              <th>Thời Điểm Nộp</th>
+            </tr>
+          </thead>
+          <tbody id="submissions-tbody">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
       </div>
     </section>
 
@@ -301,27 +332,31 @@
   <div class="modal-overlay" id="topic-modal">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 id="modal-topic-title">Luyện tập chủ đề</h3>
+        <h3 id="modal-topic-title">Luyện tập theo bài</h3>
         <button class="modal-close" onclick="closeTopicModal()">✕</button>
       </div>
       <div class="modal-body">
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;" id="modal-topic-count">
-          Ngân hàng có sẵn 20 câu hỏi
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.25rem;" id="modal-topic-count">
+          Ngân hàng có sẵn câu hỏi
         </p>
 
         <div class="form-group">
           <label>Em muốn làm bao nhiêu câu?</label>
-          <select id="modal-q-count" class="form-select">
+          <div class="quick-options-grid" id="topic-q-count-presets">
             <!-- Rendered by JS -->
-          </select>
+          </div>
+          <div class="custom-count-row" style="margin-top: 0.75rem;">
+            <span>Hoặc tự nhập số câu:</span>
+            <input type="number" id="topic-custom-q-count" min="1" max="100" placeholder="Số câu..." class="form-control-sm">
+          </div>
         </div>
 
-        <p style="font-size: 0.85rem; color: #64748b; background: #f8fafc; padding: 0.75rem; border-radius: 6px;">
-          💡 Chế độ ôn tập theo chủ đề không giới hạn thời gian. Em cứ bình tĩnh tính toán và đọc kỹ câu hỏi nhé!
+        <p class="topic-note-box">
+          Chế độ ôn tập theo từng bài không giới hạn thời gian. Em hãy bình tĩnh đọc kỹ đề bài và tính toán cẩn thận vào giấy nháp nhé!
         </p>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-outline" onclick="closeTopicModal()">Hủy</button>
+        <button class="btn btn-outline" onclick="closeTopicModal()">Đóng</button>
         <button class="btn btn-primary" onclick="startTopicExam()">Bắt Đầu Làm Bài</button>
       </div>
     </div>
@@ -329,8 +364,8 @@
 
   <!-- Footer -->
   <footer>
-    <p>Website Ôn Tập Trắc Nghiệm Toán 6 - Thầy Bùi Đức Đạt · THCS Lương Khánh Thiện</p>
-    <p style="font-size: 0.8rem; margin-top: 0.3rem;">Hệ thống lưu trữ tự động • Không cần tài khoản • Hỗ trợ học tập 24/7</p>
+    <p>TRƯỜNG THCS LƯƠNG KHÁNH THIỆN - TỔ TOÁN</p>
+    <p style="font-size: 0.85rem; margin-top: 0.3rem;">Hệ thống Ôn tập & Kiểm tra Trắc nghiệm Toán 6 • Phụ trách chuyên môn: Thầy Bùi Đức Đạt</p>
   </footer>
 
   <script src="/static/js/app.js"></script>
