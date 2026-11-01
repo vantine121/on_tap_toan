@@ -669,13 +669,48 @@ main {
   margin-bottom: 1.25rem;
 }
 
-/* Math Image Styling */
+/* Math Formula & Geometry Images Styling */
 .math-img {
   display: inline-block;
   vertical-align: middle;
-  max-height: 38px;
+  height: auto;
+  max-height: 54px;
   max-width: 100%;
-  margin: 0 2px;
+  margin: 2px 4px;
+  object-fit: contain;
+}
+
+/* Đối với hình vẽ hình học hoặc biểu đồ trong nội dung câu hỏi */
+.q-content img {
+  display: inline-block;
+  vertical-align: middle;
+  height: auto;
+  max-height: 260px;
+  max-width: 100%;
+  margin: 6px auto;
+  object-fit: contain;
+}
+
+/* Đối với công thức và hình trong các lựa chọn đáp án A, B, C, D */
+.option-item img {
+  display: inline-block;
+  vertical-align: middle;
+  height: auto;
+  max-height: 60px;
+  max-width: 100%;
+  margin: 0 4px;
+  object-fit: contain;
+}
+
+/* Đối với hình và công thức trong lời giải chi tiết */
+.q-explanation img {
+  display: inline-block;
+  vertical-align: middle;
+  height: auto;
+  max-height: 240px;
+  max-width: 100%;
+  margin: 4px auto;
+  object-fit: contain;
 }
 
 /* Options Grid */
